@@ -2,6 +2,8 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors')
 require('dotenv').config();
+require('./database/database')
+const Correo = require('./database/schemas/emails.schema')
 
 const app = express();
 const port = 3000;
@@ -43,6 +45,20 @@ app.post('/enviar-correo', async (req, res) => {
       res.status(200).send('Correo enviado correctamente');
     }
   });
+
+  const nuevoCorreo = new Correo({
+    email: req.body.email,
+  });
+
+  // Guardar en la base de datos
+  nuevoCorreo.save()
+    .then((correoGuardado) => {
+      console.log('Correo guardado:', correoGuardado);
+    })
+    .catch((error) => {
+      console.error('Error al guardar el correo:', error);
+    });
+
 });
 
 // Iniciar el servidor
